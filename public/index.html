@@ -1,1 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Family Cookout 🍖</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffcc02 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* ========== LANDING PAGE ========== */
+    .landing-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .landing-page h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 4rem;
+      color: white;
+      text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+      margin-bottom: 10px;
+    }
+
+    .event-date {
+      font-size: 1.8rem;
+      color: white;
+      font-weight: 600;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .countdown-container {
+      background: rgba(255,255,255,0.95);
+      border-radius: 20px;
+      padding: 30px 40px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      margin-bottom: 40px;
+    }
+
+    .countdown-label {
+      font-size: 1rem;
+      color: #666;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .countdown {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .countdown-item {
+      text-align: center;
+    }
+
+    .countdown-value {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #ff6b35;
+      line-height: 1;
+    }
+
+    .countdown-unit {
+      font-size: 0.8rem;
+      color: #888;
+      text-transform: uppercase;
+    }
+
+    .emoji-decoration {
+      font-size: 3rem;
+      margin: 20px 0;
+    }
+
+    .enter-btn {
+      background: white;
+      color: #ff6b35;
+      border: none;
+      padding: 18px 50px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+
+    .enter-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+
+    /* ========== NAV TABS ========== */
+    .nav-tabs {
+      display: flex;
+      background: rgba(255,255,255,0.2);
+      border-radius: 15px;
+      padding: 5px;
+      margin-bottom: 20px;
+    }
+
+    .nav-tab {
+      flex: 1;
+      padding: 15px;
+      text-align: center;
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .nav-tab.active {
+      background: white;
+      color: #ff6b35;
+    }
+
+    .nav-tab:hover:not(.active) {
+      background: rgba(255,255,255,0.3);
+    }
+
+    /* ========== MAIN PAGES ========== */
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      font-size: 1.5rem;
+      color: #ff6b35;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .input-group input, .input-group select {
+      flex: 1;
+      padding: 15px;
+      border: 2px solid #eee;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: 'Poppins', sans-serif;
+      transition: border-color 0.3s;
+    }
+
+    .input-group input:focus, .input-group select:focus {
+      outline: none;
+      border-color: #ff6b35;
+    }
+
+    .add-btn {
+      background: #ff6b35;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .add-btn:hover {
+      background: #e55a2b;
+      transform: scale(1.05);
+    }
+
+    /* ========== GUEST LIST ========== */
+    .guest-list {
+      list-style: none;
+    }
+
+    .guest-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .guest-number {
+      background: #ff6b35;
+      color: white;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      margin-right: 15px;
+    }
+
+    .guest-name {
+      flex: 1;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    .delete-btn {
+      background: #ff4757;
+      color: white;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      line-height: 1;
+      transition: all 0.3s;
+    }
+
+    .delete-btn:hover {
+      background: #ff2f42;
+      transform: scale(1.1);
+    }
+
+    /* ========== FOOD LIST ========== */
+    .food-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      animation: slideIn 0.3s ease;
+    }
+
+    .food-item.claimed .food-text {
+      text-decoration: line-through;
+      color: #999;
+    }
+
+    .food-checkbox {
+      width: 25px;
+      height: 25px;
+      margin-right: 15px;
+      cursor: pointer;
+      accent-color: #ff6b35;
+    }
+
+    .food-text {
+      flex: 1;
+    }
+
+    .food-text strong {
+      color: #ff6b35;
+    }
+
+    .food-text span {
+      color: #666;
+    }
+
+    /* ========== BACK BUTTON ========== */
+    .back-btn {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-bottom: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+
+    .back-btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    /* ========== EMPTY STATE ========== */
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+
+    .empty-state .emoji {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+
+    /* ========== MINI COUNTDOWN ========== */
+    .mini-countdown {
+      text-align: center;
+      padding: 15px;
+      background: rgba(255,107,53,0.1);
+      border-radius: 12px;
+      margin-top: 15px;
+    }
+
+    .mini-countdown-text {
+      font-size: 0.9rem;
+      color: #ff6b35;
+      font-weight: 600;
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 500px) {
+      .landing-page h1 {
+        font-size: 2.8rem;
+      }
+      
+      .countdown-value {
+        font-size: 2rem;
+      }
+      
+      .input-group {
+        flex-direction: column;
+      }
+      
+      .add-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== LANDING PAGE ========== -->
+  <div id="landing" class="landing-page">
+    <h1>Family Cookout</h1>
+    <div class="event-date">April 4, 2026</div>
+    
+    <div class="countdown-container">
+      <div class="countdown-label">Countdown to the Cookout</div>
+      <div class="countdown" id="countdown">
+        <div class="countdown-item">
+          <div class="countdown-value" id="days">--</div>
+          <div class="countdown-unit">Days</div>
+        </div>
+        <div class="countdown-item">
+          <div class="countdown-value" id="hours">--</div>
+          <div class="countdown-unit">Hours</div>
+        </div>
+        <div class="countdown-item">
+          <div class="countdown-value" id="minutes">--</div>
+          <div class="countdown-unit">Minutes</div>
+        </div>
+        <div class="countdown-item">
+          <div class="countdown-value" id="seconds">--</div>
+          <div class="countdown-unit">Seconds</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="emoji-decoration">🍖 🌽 🍔 🌭 🥗</div>
+    
+    <button class="enter-btn" onclick="showMainApp()">Join the Cookout! 🎉</button>
+  </div>
+
+  <!-- ========== MAIN APP ========== -->
+  <div id="mainApp" class="container" style="display: none;">
+    <button class="back-btn" onclick="showLanding()">← Back to Home</button>
+    
+    <nav class="nav-tabs">
+      <button class="nav-tab active" onclick="showPage('rsvp', this)">👥 Guest List</button>
+      <button class="nav-tab" onclick="showPage('food', this)">🍽️ Bringing Food</button>
+    </nav>
+
+    <!-- RSVP PAGE -->
+    <div id="rsvp" class="page active">
+      <div class="card">
+        <h2>👋 RSVP - Add Your Name</h2>
+        <div class="input-group">
+          <input type="text" id="guestName" placeholder="Enter your name..." onkeypress="handleGuestKeypress(event)">
+          <button class="add-btn" onclick="addGuest()">Add Me!</button>
+        </div>
+        
+        <h3 style="margin-bottom: 15px; color: #666;">Who's Coming:</h3>
+        <ul class="guest-list" id="guestList">
+          <li class="empty-state">
+            <div class="emoji">🎈</div>
+            <div>No guests yet. Be the first to RSVP!</div>
+          </li>
+        </ul>
+        
+        <div class="mini-countdown">
+          <div class="mini-countdown-text" id="miniCountdown"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOD PAGE -->
+    <div id="food" class="page">
+      <div class="card">
+        <h2>🍽️ What Are You Bringing?</h2>
+        <div class="input-group">
+          <select id="foodGuest">
+            <option value="">Select your name...</option>
+          </select>
+          <input type="text" id="foodItem" placeholder="What are you bringing?" onkeypress="handleFoodKeypress(event)">
+        </div>
+        <button class="add-btn" style="width: 100%; margin-bottom: 20px;" onclick="addFood()">Add to List</button>
+        
+        <h3 style="margin-bottom: 15px; color: #666;">Food Signup:</h3>
+        <div id="foodList">
+          <div class="empty-state">
+            <div class="emoji">🍕</div>
+            <div>No food items yet. Add what you're bringing!</div>
+          </div>
+        </div>
+        
+        <div class="mini-countdown">
+          <div class="mini-countdown-text" id="miniCountdown2"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== COUNTDOWN TIMER ==========
+    const eventDate = new Date('April 4, 2026 12:00:00').getTime();
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = eventDate - now;
+
+      if (distance < 0) {
+        document.getElementById('countdown').innerHTML = '<div style="font-size: 2rem; color: #ff6b35;">🎉 The cookout is TODAY! 🎉</div>';
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      document.getElementById('days').textContent = days;
+      document.getElementById('hours').textContent = hours;
+      document.getElementById('minutes').textContent = minutes;
+      document.getElementById('seconds').textContent = seconds;
+
+      // Mini countdown text
+      const miniText = `⏰ ${days} days, ${hours} hours, ${minutes} minutes until the cookout!`;
+      const mini1 = document.getElementById('miniCountdown');
+      const mini2 = document.getElementById('miniCountdown2');
+      if (mini1) mini1.textContent = miniText;
+      if (mini2) mini2.textContent = miniText;
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // ========== PAGE NAVIGATION ==========
+    function showMainApp() {
+      document.getElementById('landing').style.display = 'none';
+      document.getElementById('mainApp').style.display = 'block';
+      loadGuests();
+      loadFood();
+    }
+
+    function showLanding() {
+      document.getElementById('landing').style.display = 'flex';
+      document.getElementById('mainApp').style.display = 'none';
+    }
+
+    function showPage(pageId, tabEl) {
+      // Hide all pages
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      // Show selected page
+      document.getElementById(pageId).classList.add('active');
+      // Update tabs
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      tabEl.classList.add('active');
+    }
+
+    // ========== GUEST FUNCTIONS ==========
+    async function loadGuests() {
+      try {
+        const response = await fetch('/api/guests');
+        const guests = await response.json();
+        renderGuests(guests);
+        updateGuestDropdown(guests);
+      } catch (error) {
+        console.error('Error loading guests:', error);
+      }
+    }
+
+    function renderGuests(guests) {
+      const list = document.getElementById('guestList');
+      
+      if (guests.length === 0) {
+        list.innerHTML = `
+          <li class="empty-state">
+            <div class="emoji">🎈</div>
+            <div>No guests yet. Be the first to RSVP!</div>
+          </li>
+        `;
+        return;
+      }
+
+      list.innerHTML = guests.map((guest, index) => `
+        <li class="guest-item">
+          <div class="guest-number">${index + 1}</div>
+          <div class="guest-name">${escapeHtml(guest.name)}</div>
+          <button class="delete-btn" onclick="deleteGuest(${guest.id})" title="Remove">×</button>
+        </li>
+      `).join('');
+    }
+
+    function updateGuestDropdown(guests) {
+      const select = document.getElementById('foodGuest');
+      select.innerHTML = '<option value="">Select your name...</option>' +
+        guests.map(g => `<option value="${g.id}">${escapeHtml(g.name)}</option>`).join('');
+    }
+
+    async function addGuest() {
+      const input = document.getElementById('guestName');
+      const name = input.value.trim();
+      
+      if (!name) {
+        alert('Please enter your name!');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/guests', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name })
+        });
+        
+        if (response.ok) {
+          input.value = '';
+          loadGuests();
+          loadFood();
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Failed to add guest');
+        }
+      } catch (error) {
+        console.error('Error adding guest:', error);
+      }
+    }
+
+    async function deleteGuest(id) {
+      if (!confirm('Remove this guest?')) return;
+      
+      try {
+        await fetch(`/api/guests/${id}`, { method: 'DELETE' });
+        loadGuests();
+        loadFood();
+      } catch (error) {
+        console.error('Error deleting guest:', error);
+      }
+    }
+
+    function handleGuestKeypress(e) {
+      if (e.key === 'Enter') addGuest();
+    }
+
+    // ========== FOOD FUNCTIONS ==========
+    async function loadFood() {
+      try {
+        const response = await fetch('/api/food');
+        const items = await response.json();
+        renderFood(items);
+      } catch (error) {
+        console.error('Error loading food:', error);
+      }
+    }
+
+    function renderFood(items) {
+      const container = document.getElementById('foodList');
+      
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="emoji">🍕</div>
+            <div>No food items yet. Add what you're bringing!</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="food-item ${item.claimed ? 'claimed' : ''}">
+          <input type="checkbox" class="food-checkbox" 
+            ${item.claimed ? 'checked' : ''} 
+            onchange="toggleFood(${item.id})">
+          <div class="food-text">
+            <strong>${escapeHtml(item.guest_name)}</strong> — 
+            <span>${escapeHtml(item.item)}</span>
+          </div>
+          <button class="delete-btn" onclick="deleteFood(${item.id})" title="Remove">×</button>
+        </div>
+      `).join('');
+    }
+
+    async function addFood() {
+      const guestId = document.getElementById('foodGuest').value;
+      const item = document.getElementById('foodItem').value.trim();
+      
+      if (!guestId) {
+        alert('Please select your name first!');
+        return;
+      }
+      if (!item) {
+        alert('Please enter what you\'re bringing!');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/food', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ guest_id: parseInt(guestId), item })
+        });
+        
+        if (response.ok) {
+          document.getElementById('foodItem').value = '';
+          loadFood();
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Failed to add food item');
+        }
+      } catch (error) {
+        console.error('Error adding food:', error);
+      }
+    }
+
+    async function toggleFood(id) {
+      try {
+        await fetch(`/api/food/${id}/toggle`, { method: 'PATCH' });
+        loadFood();
+      } catch (error) {
+        console.error('Error toggling food:', error);
+      }
+    }
+
+    async function deleteFood(id) {
+      if (!confirm('Remove this food item?')) return;
+      
+      try {
+        await fetch(`/api/food/${id}`, { method: 'DELETE' });
+        loadFood();
+      } catch (error) {
+        console.error('Error deleting food:', error);
+      }
+    }
+
+    function handleFoodKeypress(e) {
+      if (e.key === 'Enter') addFood();
+    }
+
+    // ========== UTILITY ==========
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>
