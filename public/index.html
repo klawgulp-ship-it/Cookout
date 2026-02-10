@@ -356,6 +356,56 @@
       font-weight: 600;
     }
 
+    /* ========== CHAT STYLES ========== */
+    .chat-container {
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 10px 0;
+    }
+
+    .chat-bubble {
+      background: #f0f2f5;
+      border-radius: 18px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      animation: slideIn 0.3s ease;
+      position: relative;
+    }
+
+    .chat-bubble .chat-name {
+      font-weight: 600;
+      color: #ff6b35;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    .chat-bubble .chat-text {
+      color: #333;
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+
+    .chat-bubble .chat-time {
+      font-size: 0.75rem;
+      color: #999;
+      margin-top: 6px;
+    }
+
+    .chat-bubble .delete-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 24px;
+      height: 24px;
+      font-size: 1rem;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .chat-bubble:hover .delete-btn {
+      opacity: 1;
+    }
+
     /* ========== RESPONSIVE ========== */
     @media (max-width: 500px) {
       .landing-page h1 {
@@ -416,7 +466,8 @@
     
     <nav class="nav-tabs">
       <button class="nav-tab active" onclick="showPage('rsvp', this)">👥 Guest List</button>
-      <button class="nav-tab" onclick="showPage('food', this)">🍽️ Bringing Food</button>
+      <button class="nav-tab" onclick="showPage('food', this)">🍽️ Food</button>
+      <button class="nav-tab" onclick="showPage('chat', this)">💬 Chat</button>
     </nav>
 
     <!-- RSVP PAGE -->
@@ -467,6 +518,31 @@
         </div>
       </div>
     </div>
+
+    <!-- CHAT PAGE -->
+    <div id="chat" class="page">
+      <div class="card">
+        <h2>💬 Family Chat</h2>
+        <div class="input-group">
+          <input type="text" id="chatName" placeholder="Your name...">
+        </div>
+        <div class="input-group">
+          <input type="text" id="chatMessage" placeholder="Type a message..." onkeypress="handleChatKeypress(event)">
+          <button class="add-btn" onclick="addComment()">Send</button>
+        </div>
+        
+        <div id="chatList" class="chat-container">
+          <div class="empty-state">
+            <div class="emoji">💬</div>
+            <div>No messages yet. Start the conversation!</div>
+          </div>
+        </div>
+        
+        <div class="mini-countdown">
+          <div class="mini-countdown-text" id="miniCountdown3"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -496,8 +572,10 @@
       const miniText = `⏰ ${days} days, ${hours} hours, ${minutes} minutes until the cookout!`;
       const mini1 = document.getElementById('miniCountdown');
       const mini2 = document.getElementById('miniCountdown2');
+      const mini3 = document.getElementById('miniCountdown3');
       if (mini1) mini1.textContent = miniText;
       if (mini2) mini2.textContent = miniText;
+      if (mini3) mini3.textContent = miniText;
     }
 
     setInterval(updateCountdown, 1000);
@@ -509,6 +587,7 @@
       document.getElementById('mainApp').style.display = 'block';
       loadGuests();
       loadFood();
+      loadComments();
     }
 
     function showLanding() {
@@ -703,6 +782,91 @@
 
     function handleFoodKeypress(e) {
       if (e.key === 'Enter') addFood();
+    }
+
+    // ========== CHAT FUNCTIONS ==========
+    async function loadComments() {
+      try {
+        const response = await fetch('/api/comments');
+        const comments = await response.json();
+        renderComments(comments);
+      } catch (error) {
+        console.error('Error loading comments:', error);
+      }
+    }
+
+    function renderComments(comments) {
+      const container = document.getElementById('chatList');
+      
+      if (comments.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="emoji">💬</div>
+            <div>No messages yet. Start the conversation!</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = comments.map(comment => {
+        const date = new Date(comment.created_at);
+        const timeStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        return `
+          <div class="chat-bubble">
+            <div class="chat-name">${escapeHtml(comment.name)}</div>
+            <div class="chat-text">${escapeHtml(comment.message)}</div>
+            <div class="chat-time">${timeStr}</div>
+            <button class="delete-btn" onclick="deleteComment(${comment.id})" title="Delete">×</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function addComment() {
+      const name = document.getElementById('chatName').value.trim();
+      const message = document.getElementById('chatMessage').value.trim();
+      
+      if (!name) {
+        alert('Please enter your name!');
+        return;
+      }
+      if (!message) {
+        alert('Please enter a message!');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/comments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, message })
+        });
+        
+        if (response.ok) {
+          document.getElementById('chatMessage').value = '';
+          loadComments();
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Failed to send message');
+        }
+      } catch (error) {
+        console.error('Error sending message:', error);
+      }
+    }
+
+    async function deleteComment(id) {
+      if (!confirm('Delete this message?')) return;
+      
+      try {
+        await fetch(`/api/comments/${id}`, { method: 'DELETE' });
+        loadComments();
+      } catch (error) {
+        console.error('Error deleting comment:', error);
+      }
+    }
+
+    function handleChatKeypress(e) {
+      if (e.key === 'Enter') addComment();
     }
 
     // ========== UTILITY ==========
