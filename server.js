@@ -11,8 +11,17 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// Initialize SQLite Database
-const db = new Database('./cookout.db');
+// Initialize SQLite Database - use /app/data for Railway volume persistence
+const fs = require('fs');
+const dbPath = process.env.RAILWAY_ENVIRONMENT ? '/app/data/cookout.db' : './cookout.db';
+
+// Ensure directory exists
+const dbDir = path.dirname(dbPath);
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+}
+
+const db = new Database(dbPath);
 
 // Create tables
 db.exec(`
@@ -29,6 +38,13 @@ db.exec(`
     claimed INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (guest_id) REFERENCES guests(id)
+  );
+  
+  CREATE TABLE IF NOT EXISTS comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    message TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 `);
 
@@ -126,6 +142,40 @@ app.delete('/api/food/:id', (req, res) => {
   const { id } = req.params;
   db.prepare('DELETE FROM food_items WHERE id = ?').run(id);
   res.json({ message: 'Food item removed successfully' });
+});
+
+// ============ COMMENTS API ============
+
+// Get all comments
+app.get('/api/comments', (req, res) => {
+  const comments = db.prepare('SELECT * FROM comments ORDER BY created_at DESC').all();
+  res.json(comments);
+});
+
+// Add a comment
+app.post('/api/comments', (req, res) => {
+  const { name, message } = req.body;
+  
+  if (!name || name.trim() === '' || !message || message.trim() === '') {
+    return res.status(400).json({ error: 'Name and message are required' });
+  }
+  
+  const stmt = db.prepare('INSERT INTO comments (name, message) VALUES (?, ?)');
+  const result = stmt.run(name.trim(), message.trim());
+  
+  res.json({ 
+    id: result.lastInsertRowid, 
+    name: name.trim(),
+    message: message.trim(),
+    created_at: new Date().toISOString()
+  });
+});
+
+// Delete a comment
+app.delete('/api/comments/:id', (req, res) => {
+  const { id } = req.params;
+  db.prepare('DELETE FROM comments WHERE id = ?').run(id);
+  res.json({ message: 'Comment removed successfully' });
 });
 
 // Serve the main page
